@@ -39,18 +39,15 @@ Tools AnnotationPixelate::toolType() const
 
 QImage AnnotationPixelate::obfuscateBackground(const QImage &sceneBehindItem) const
 {
-	auto width = sceneBehindItem.width();
-	auto factor = obfuscateProperties()->factor();
-	auto intensity = abs(factor - 21) * 0.01;
-	auto scaledWidth = width * intensity;
+    auto result = sceneBehindItem.convertToFormat( QImage::Format_ARGB32_Premultiplied );
+    auto factor = obfuscateProperties()->factor();
 
-	if(scaledWidth < 1) {
-		return sceneBehindItem;
-	}
+    int width  = sceneBehindItem.width() * (0.5 / qMax(1, factor));
+    int height = sceneBehindItem.height() * (0.5 / qMax(1, factor));
+    QSize size  = QSize(qMax(width, 1), qMax(height, 1));
 
-	auto result   = sceneBehindItem.convertToFormat( QImage::Format_ARGB32_Premultiplied );
-	result = result.scaledToWidth(scaledWidth, Qt::FastTransformation );
-	result = result.scaledToWidth(width, Qt::FastTransformation );
+    result = result.scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    result = result.scaled(sceneBehindItem.width(), sceneBehindItem.height());
 
 	return result;
 }
