@@ -55,21 +55,24 @@ qreal ScaledSizeProvider::scaleFactor()
 qreal ScaledSizeProvider::getScaleFactor()
 {
 #if defined(__linux__)
-    DesktopEnvironmentChecker desktopEnvironmentChecker;
-	auto environment = desktopEnvironmentChecker.getDesktopEnvironment();
-
-	if (environment == DesktopEnvironmentType::Gnome) {
+	if(isGnomeEnvironment()) {
 		auto screen = QApplication::primaryScreen();
 		auto logicalDotsPerInch = (int) screen->logicalDotsPerInch();
 		auto physicalDotsPerInch = (int) screen->physicalDotsPerInch();
 		return (qreal)logicalDotsPerInch / (qreal)physicalDotsPerInch;
-	} else if (environment == DesktopEnvironmentType::Kde) {
-		auto screen = QApplication::primaryScreen();
-		return screen->devicePixelRatio();
 	}
 #endif
 
 	return 1;
 }
+
+#if defined(__linux__)
+bool ScaledSizeProvider::isGnomeEnvironment()
+{
+	auto currentDesktop = QString(qgetenv("XDG_CURRENT_DESKTOP"));
+	return currentDesktop.contains(QLatin1String("gnome"), Qt::CaseInsensitive)
+		|| currentDesktop.contains(QLatin1String("unity"), Qt::CaseInsensitive);
+}
+#endif
 
 } // namespace kImageAnnotator
