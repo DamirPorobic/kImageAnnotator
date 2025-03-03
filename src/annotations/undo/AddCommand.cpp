@@ -31,12 +31,20 @@ void AddCommand::undo()
 {
     mAnnotationArea->removeAnnotationItem(mItem);
     mItem->hide();
+
+    if (auto numberItem = dynamic_cast<BaseAnnotationNumber *>(mItem)) {
+        mAnnotationArea->numberToolSeedChanged(numberItem->number());
+    }
 }
 
 void AddCommand::redo()
 {
     mAnnotationArea->addAnnotationItem(mItem);
     mItem->show();
+
+    if (auto numberItem = dynamic_cast<BaseAnnotationNumber *>(mItem)) {
+        mAnnotationArea->numberToolSeedChanged(numberItem->number() + 1);
+    }
 }
 
 } // namespace kImageAnnotator

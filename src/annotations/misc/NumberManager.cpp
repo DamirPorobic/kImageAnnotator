@@ -90,6 +90,7 @@ void NumberManager::setNumberSeed(int numberSeed)
 {
 	mNumberSeed = numberSeed;
 	updateExistingNumbersIfRequired();
+	emit numberSeedChanged(mNumberSeed);
 }
 
 int NumberManager::numberSeed() const
